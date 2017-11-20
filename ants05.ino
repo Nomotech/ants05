@@ -22,20 +22,17 @@ const int led[] = {4,5,6,7};
 
 #define PI 3.1415926535897932384626433832795
 
-// --------------------------------< data >----------------------------------------------
-float tireDistance = 27.0;      // 機体中心軸からタイヤまでの距離
-float tireRadius = 12.3;        // タイヤ半径
-// タイヤスリット 30 --> 60ppr
-// 各タイヤ走行距離 = (タイヤ半径) * (回転角) = (タイヤ半径) * (encoderCount / 60) * PI
+// --------------------------------< global変数 >----------------------------------------------
+const float tireDistance = 27.0;      // 機体中心軸からタイヤまでの距離
+const float tireRadius = 12.3;        // タイヤ半径
+const int threshold = 1000;           // encoder閾値
+const int ppr = 60;                   // タイヤスリット 30 --> 60ppr
 
-int16_t xa_d=0,ya_d=0,za_d=0;
-int16_t xg_d=0,yg_d=0,zg_d=0;
-float xa = 0.0, ya = 0.0, za = 0.0;
-float xg = 0.0, yg = 0.0, zg = 0.0;
-float temp = 0.0;
-
-float rightMoter=0.0;
-float leftMoter=0.0;
+int16_t xa_d=0,ya_d=0,za_d=0;       // 加速度変化量
+int16_t xg_d=0,yg_d=0,zg_d=0;       // ジャイロ変化量
+float xa = 0.0, ya = 0.0, za = 0.0; // 加速度積算
+float xg = 0.0, yg = 0.0, zg = 0.0; // ジャイロ積算
+float temp = 0.0;                   // 温度
     
 bool encoderR = false;
 bool encoderL = false;
@@ -45,18 +42,18 @@ int encoderCountR = 0;
 int encoderCountL = 0;
 int encoderCountR_ = 0;
 int encoderCountL_ = 0;
-int Threshold = 1000;
+
+float encoderT = 0.0;   //エンコーダTheta(rad)
+float gyroT = 0.0;      //ジャイロTheta(SI)
 
 float machineX = 0.0; //機体座標X(mm)
 float machineY = 0.0; //機体座標Y(mm)
-float machineT = 0.0; //機体角度Theta(rad)   
-float encoderT = 0.0; //エンコーダTheta(rad)
-float gyroT = 0.0;    //ジャイロTheta(SI)
+float machineT = 0.0; //機体角度Theta(rad) 
 
-bool startFlag = false; 
-bool sw0 = false;
-bool oldsw0 = false; 
+float rightMoter=0.0; // 右moter出力 -1.0 ~ 1.0
+float leftMoter=0.0;  // 左moter出力 -1.0 ~ 1.0
 
+ 
 // -----------------------------<>-----------------------------------
 void update(){
   rightMoter = 0.0;
@@ -66,7 +63,7 @@ void update(){
 
 void MainTask(void* arg) {
   while (1) {
-    attitudeAngle(0.0);               // 機体の姿勢角
+    attitudeAngle(0.0);               // 機体の姿勢角になるようにmoter出力を変える
     Move(leftMoter,rightMoter);       // モーターに出力値を与える
     update();                         // update
     delay(10);

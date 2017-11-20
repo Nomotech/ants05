@@ -41,8 +41,8 @@ void Move(float L,float R){
         ledcWrite(led[3],0);
         ledcWrite(led[2],(int)((-R * b + c) * 0xffff));
     }
-     Serial.print("leftMoter:");  Serial.print(leftMoter); 
-     Serial.print(" rightMoter:"); Serial.print(rightMoter);  
-     Serial.print("\n");
+     // Serial.print("leftMoter:");  Serial.print(leftMoter); 
+     // Serial.print(" rightMoter:"); Serial.print(rightMoter);  
+     // Serial.print("\n");
 }
 
