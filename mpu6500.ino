@@ -7,7 +7,6 @@ void mpuInit(){
     //SPI.begin(13,27,22,23);
     SPI.setDataMode(SPI_MODE0);
     SPI.setBitOrder(MSBFIRST);
-    Serial.begin(115200);
 
     // SSをHightに
     pinMode(SS, OUTPUT);
@@ -25,9 +24,9 @@ void mpuInit(){
 void updateMpuData(){
     mpuGet();
     //加速度
-    xa_d  = ((int16_t) mpuData[0] <<8)|(int16_t) mpuData[1];
-    ya_d  = ((int16_t) mpuData[2] <<8)|(int16_t) mpuData[3];
-    za_d  = ((int16_t) mpuData[4] <<8)|(int16_t) mpuData[5];
+    ax  = ((int16_t) mpuData[0] <<8)|(int16_t) mpuData[1];
+    ay  = ((int16_t) mpuData[2] <<8)|(int16_t) mpuData[3];
+    az  = ((int16_t) mpuData[4] <<8)|(int16_t) mpuData[5];
 
     //温度
     temp  = ((int16_t) mpuData[6] <<8)|(int16_t) mpuData[7];
@@ -38,20 +37,17 @@ void updateMpuData(){
     zg_d  = ((int16_t) mpuData[12]<<8)|(int16_t) mpuData[13];
 
     //加速度加算
-    xa += xa_d - mpuOffset[0];
-    ya += ya_d - mpuOffset[1];
-    za += za_d - mpuOffset[2];
+    vx += (ax - mpuOffset[0])/100;
+    vy += (ay - mpuOffset[1])/100;
+    vz += (az - mpuOffset[2])/100;
 
-    //  xa = xa_d;
-    //  ya = ya_d;
-    //  za = za_d;
+    //  vx = ax;
+    //  vy = ay;
+    //  vz = az;
 
     xg += xg_d - mpuOffset[3];
     yg += yg_d - mpuOffset[4];
     zg += zg_d - mpuOffset[5];
-
-    // gyroAng = (float)zg * (90.0 / 0xffff);    // 0xffff/2 * 180 (SI);
-    gyroT = zg * PI / 0xffff;
 }
 
 void writeRegister(char registerAddress, char value) {
@@ -96,9 +92,9 @@ void carib(int num){
     for(int i = 0;i<num;i++){
         mpuGet();
         //加速度
-        xa_d  = ((int16_t) mpuData[0] <<8)|(int16_t) mpuData[1];
-        ya_d  = ((int16_t) mpuData[2] <<8)|(int16_t) mpuData[3];
-        za_d  = ((int16_t) mpuData[4] <<8)|(int16_t) mpuData[5];
+        ax  = ((int16_t) mpuData[0] <<8)|(int16_t) mpuData[1];
+        ay  = ((int16_t) mpuData[2] <<8)|(int16_t) mpuData[3];
+        az  = ((int16_t) mpuData[4] <<8)|(int16_t) mpuData[5];
 
         //温度
         temp  = ((int16_t) mpuData[6] <<8)|(int16_t) mpuData[7];
@@ -109,21 +105,21 @@ void carib(int num){
         zg_d  = ((int16_t) mpuData[12]<<8)|(int16_t) mpuData[13];
 
         //加速度加算
-        xa += xa_d;
-        ya += ya_d;
-        za += za_d;
+        vx += ax;
+        vy += ay;
+        vz += az;
 
         xg += xg_d;
         yg += yg_d;
         zg += zg_d;
     }
-    mpuOffset[0] = xa/num;
-    mpuOffset[1] = ya/num;
-    mpuOffset[2] = za/num;
+    mpuOffset[0] = vx/num;
+    mpuOffset[1] = vy/num;
+    mpuOffset[2] = vz/num;
     mpuOffset[3] = xg/num;
     mpuOffset[4] = yg/num;
     mpuOffset[5] = zg/num;
-    xa = 0.0; ya = 0.0; za = 0.0;
+    vx = 0.0; vy = 0.0; vz = 0.0;
     xg = 0.0; yg = 0.0; zg = 0.0;
 }
 
@@ -151,9 +147,9 @@ void mpuGet2(){
 
 void mpuLog(){
     // ログ出力 
-    // Serial.print("xa: ");     Serial.print(xa);   Serial.print("\t");
-    // Serial.print("ya: ");     Serial.print(ya);   Serial.print("\t");
-    // Serial.print("za: ");     Serial.print(za);   Serial.print("\t");
+    // Serial.print("vx: ");     Serial.print(vx);   Serial.print("\t");
+    // Serial.print("vy: ");     Serial.print(vy);   Serial.print("\t");
+    // Serial.print("vz: ");     Serial.print(vz);   Serial.print("\t");
     // Serial.print("temp: ");   Serial.print(temp); Serial.print("\t");
     Serial.print("xg: ");     Serial.print(xg);   Serial.print("\t");
     Serial.print("yg: ");     Serial.print(yg);   Serial.print("\t");

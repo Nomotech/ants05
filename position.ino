@@ -32,6 +32,7 @@ void updateMachinePosition(){
   float dL = (float)(encoderCountL - encoderCountL_) / ppr * tireRadius * PI;
   encoderCountR_ = encoderCountR;
   encoderCountL_ = encoderCountL;
+
   
   float r = dR; // 直進
   if(dR != dL) r = (float)(dR + dL) * tireDistance / (dR - dL); //カーブの回転半径  
@@ -51,34 +52,19 @@ void updateMachinePosition(){
   float dX_g = r * sin(dTheta_g);                                   //１ループ前の機体座標のXの変化量
   float dY_g = r * (1.0-cos(dTheta_g));                             //１ループ前の機体座標のYの変化量
   gyroT = zg / 0xffff;
-  machineX += dX_g * cos(gyroT) - dY_g * sin(gyroT);
-  machineY += dX_g * sin(gyroT) + dY_g * cos(gyroT);
-
-  machineT = gyroT;
-
-
-  
-
-  // Serial.print("encoderCountR_: ");  Serial.print(encoderCountR_); Serial.print("\t");
-  // Serial.print("encoderCountL_: ");  Serial.print(encoderCountL_); Serial.print("\t");
-  // Serial.print("r: "); Serial.print(r);  Serial.print("\t");
-  // Serial.print("dX: ");  Serial.print(dX); Serial.print("\t");
-  // Serial.print("dY: ");  Serial.print(dY); Serial.print("\t");
-
-  // Serial.print("machineX: "); Serial.print(machineX); Serial.print("\t");
-  // Serial.print("machineY: "); Serial.print(machineY); Serial.print("\t");
-  // Serial.print("encoderT: "); Serial.print(encoderT); Serial.print("\t");
-  Serial.print("gyroT: ")   ; Serial.print(gyroT);    Serial.print("\t");
-  Serial.print("rad: ")   ; Serial.print(gyroT * 180 / PI);    Serial.print("\t");
-  Serial.print("\n");
+//  mpuMachineX += dX_g * cos(gyroT) - dY_g * sin(gyroT);
+//  mpuMachineY += dX_g * sin(gyroT) + dY_g * cos(gyroT);
+  mpuMachineX += vx/100 * cos(gyroT) - vy/100 * sin(gyroT);
+  mpuMachineY += vx/100 * sin(gyroT) + vy/100 * cos(gyroT);
+  mpuMachineT = gyroT;
 }
 
 void debug(){
     //pasteraterm
     Serial.print(":R:"); 
-    Serial.print((int)xa/1000); Serial.print(":"); 
-    Serial.print((int)ya/1000); Serial.print(":");
-    Serial.print((int)za/1000); Serial.print(":");Serial.print("\n");
+    Serial.print((int)vx/1000); Serial.print(":"); 
+    Serial.print((int)vy/1000); Serial.print(":");
+    Serial.print((int)vz/1000); Serial.print(":");Serial.print("\n");
     Serial.print(":B:");
     Serial.print((int)xg); Serial.print(":"); 
     Serial.print((int)yg); Serial.print(":");

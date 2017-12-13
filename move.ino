@@ -1,15 +1,17 @@
 void attitudeAngle(float angle){
   // zg  0x0000 ～ 0xffff --> -90°～ 90°
-  float machineAngle = zg * (90.0 / 0xffff);
-  float R = angle - machineAngle;
-  if(R > 90.0)  R = 90;
-  if(R < -90.0) R = -90;
-  R /= 90.0;
 
-  float L = angle + machineAngle;
-  if(L > 90.0)  L = 90;
-  if(L < -90.0) L = -90;
-  L /= 90.0;
+  //float T = machineT;
+  float T = mpuMachineT;
+  float R = angle * PI/180 - T;
+  if(R > PI/2)  R = PI/2;
+  if(R < -PI/2) R = -PI/2;
+  R /= PI/2;
+
+  float L = angle * PI/180 + T;
+  if(L >PI/2)  L = PI/2;
+  if(L < -PI/2) L = -PI/2;
+  L /= PI/2;
   rightMoter  += R;
   leftMoter   += L;
 }
