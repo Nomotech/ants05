@@ -2,7 +2,7 @@ void attitudeAngle(float angle){
   // zg  0x0000 ～ 0xffff --> -90°～ 90°
 
   //float T = machineT;
-  float T = mpuMachineT;
+  float T = machineT;
   float R = angle * PI/180 - T;
   if(R > PI/2)  R = PI/2;
   if(R < -PI/2) R = -PI/2;

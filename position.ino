@@ -1,29 +1,31 @@
 void updateEncoder(){
-	if(oldEncoderR != encoderR){
-		if(rightMoter > 0)	encoderCountR+=1;
-		if(rightMoter < 0)	encoderCountR-=1;
+  // encoderR = (analogRead(ENC_R) > threshold) ? true : false;
+  // encoderL = (analogRead(ENC_L) > threshold) ? true : false;
+  // Serial.printf("old:%d, new:%d\n",oldEncoderR,encoderR);
+  if(oldEncoderR != encoderR){
+    if(rightMoter > 0.0)	encoderCountR+=1;
+		if(rightMoter < 0.0)	encoderCountR-=1;
 	}
 	if(oldEncoderL != encoderL){
-		if(leftMoter > 0)	encoderCountL+=1;
-		if(leftMoter < 0)	encoderCountL-=1; 
+		if(leftMoter > 0.0)	encoderCountL+=1;
+		if(leftMoter < 0.0)	encoderCountL-=1; 
 	}
 
-  oldEncoderR = encoderR;
-  oldEncoderL = encoderL;
-  encoderR = (analogRead(ENC_R) > threshold) ? true : false;
-  encoderL = (analogRead(ENC_L) > threshold) ? true : false;
+  // oldEncoderR = encoderR;
+  // oldEncoderL = encoderL;
+  
 
-//   Serial.print(" enco ang R: "); Serial.print(analogRead(ENC_R));
-//   Serial.print(" enco ang L: "); Serial.print(analogRead(ENC_L));
-//   Serial.printf("\n");
+  Serial.print(" enco ang R: "); Serial.print(analogRead(ENC_R));
+  Serial.print(" enco ang L: "); Serial.print(analogRead(ENC_L));
+  Serial.printf("\n");
 
 //   Serial.print(" enco value R: "); Serial.print(encoderR);
 //   Serial.print(" enco value L: "); Serial.print(encoderL);
 //   Serial.printf("\n");
   
-//	 Serial.print(" enco count R: "); Serial.print(encoderCountR);
-//	 Serial.print(" enco count L: "); Serial.print(encoderCountL);
-//	 Serial.print("\n");
+	 // Serial.print(" enco count R: "); Serial.print(encoderCountR);
+	 // Serial.print(" enco count L: "); Serial.print(encoderCountL);
+	 // Serial.print("\n");
 }
 
 void updateMachinePosition(){
@@ -38,14 +40,16 @@ void updateMachinePosition(){
   if(dR != dL) r = (float)(dR + dL) * tireDistance / (dR - dL); //カーブの回転半径  
   
   // -----------------------< encoder 角度を利用 >-------------------------------
+  machineT = gyroT;
   float dTheta = (float)(dR - dL) / (2 * tireDistance);         //角度の変化量
   float dX = r * sin(dTheta);                                   //１ループ前の機体座標のXの変化量
   float dY = r * (1.0-cos(dTheta));                             //１ループ前の機体座標のYの変化量
   encoderT += dTheta;
-  machineX += dX * cos(encoderT) - dY * sin(encoderT);
-  machineY += dX * sin(encoderT) + dY * cos(encoderT);
+  machineX += dX * cos(machineT) - dY * sin(machineT);
+  machineY += dX * sin(machineT) + dY * cos(machineT);
 
-  machineT = encoderT;
+  //machineT = encoderT;
+  
   
   // -------------------------< gyro 角度を利用 >--------------------------------
   float dTheta_g = zg_d / 0xffff;

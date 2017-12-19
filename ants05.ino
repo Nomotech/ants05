@@ -44,7 +44,7 @@ const int servoPin[] = {14,25};
 //0b 35 34 32 33 26 27 14 12
 const int moter[]    = {0,1,2,3}; // moter attach
 const int led[] = {4,5,6,7};
-const int servo[] = {8,9};
+// const int servo[] = {8,9};
 
 #define ENC_R 4
 #define ENC_L 15
@@ -99,34 +99,45 @@ float leftMoter=0.0;  // 左moter出力 -1.0 ~ 1.0
 void update(){
 //  rightMoter = 0.0;
 //  leftMoter = 0.0;
+oldEncoderR = encoderR;
+oldEncoderL = encoderL;
+if(analogRead(ENC_R) > threshold){ encoderR = 1;
+}else encoderR = 0;
+if(analogRead(ENC_L) > threshold){ encoderL = 1;
+}else encoderL = 0;
 }
 
+void debug(int count){
+  // switch(count%3){
+  //   case 0: Serial.printf("r:%.2f:%.2f:%.2f\n",machineX,machineY,machineT); break;
+  //   case 1: Serial.printf("b:%.2f:%.2f:%.2f\n",mpuMachineX,mpuMachineY,mpuMachineT); break;
+  //   case 2: Serial.printf("y:%.2f:%.2f:%.2f\n",vx,vy,vz); break;
+  // }
+  Serial.printf("r:%.2f:%.2f:%.2f\n",machineX,machineY,machineT);
+  return;
+}
 
 void MainTask(void* arg) {
+  int count = 0;
   while (1) {
     attitudeAngle(0.0);               // 機体の姿勢角になるようにmoter出力を変える
     Move(leftMoter,rightMoter);       // モーターに出力値を与える
-    update();                         // update
+    updateMpuData();          // mpu6500からのデータ更新
+    //mpuLog();
+    updateEncoder();          // エンコーダの値を更新
+    updateMachinePosition();  // 機体座標の更新
+    debug(count);
+    count++;
+    update();
     delay(10);
   }
 }
 
 // ルーチンをこなす
 void SensorTask(void* arg) {
-  int count = 0;
   while (1) {
-    updateMpuData();          // mpu6500からのデータ更新
-    //mpuLog();
-    updateEncoder();          // エンコーダの値を更新
-    updateMachinePosition();  // 機体座標の更新
-    switch(count%3){
-      case 0: Serial.printf("r:%.2f:%.2f:%.2f\n",machineX,machineY,machineT); break;
-      case 1: Serial.printf("b:%.2f:%.2f:%.2f\n",mpuMachineX,mpuMachineY,mpuMachineT); break;
-      case 2: Serial.printf("y:%.2f:%.2f:%.2f\n",vx,vy,vz); break;
-    }
-    count++;
-    getWiFiAdv();
-    delay(10);
+//    bleGPS();
+    delay(1000);
   }
 }
 
@@ -145,15 +156,17 @@ void setup() {
     ledcAttachPin(ledPin[i], led[i]);
     ledcSetup(led[i], 1000000, 16);     //DRV8835のpwm最大周波数は250kHzまで
   }
-  for (int i = 0; i < 2; i++){
-    pinMode(servoPin[i], OUTPUT);
-    ledcAttachPin(servoPin[i], servo[i]);
-    ledcSetup(servo[i], 50, 16);     //DRV8835のpwm最大周波数は250kHzまで
-  }
+
+   // for (int i = 0; i < 2; i++){
+  //   pinMode(servoPin[i], OUTPUT);
+  //   ledcAttachPin(servoPin[i], servo[i]);
+  //   ledcSetup(servo[i], 50, 16);     //DRV8835のpwm最大周波数は250kHzまで
+  // }
   
   for (int i = 0; i < 1; i++) pinMode(button[i], INPUT);
   
-  WiFiSetup();
+  //WiFiSetup();
+  bleScanSetup();
   mpuInit();
   int i = 0;
   for(i=0;i<=65000;i+=100){ ledcWrite(led[0],i); delay(1); }  //完了の合図
