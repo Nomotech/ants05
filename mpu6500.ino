@@ -45,9 +45,10 @@ void updateMpuData(){
     //  vy = ay;
     //  vz = az;
 
-    xg += xg_d - mpuOffset[3];
-    yg += yg_d - mpuOffset[4];
-    zg += zg_d - mpuOffset[5];
+    // 1/1640 = 0.00060975609 ... 2000分割のとき
+    xg += (xg_d - mpuOffset[3]) * 0.00060975609;
+    yg += (yg_d - mpuOffset[4]) * 0.00060975609;
+    zg += (zg_d - mpuOffset[5]) * 0.00060975609;
 }
 
 void writeRegister(char registerAddress, char value) {

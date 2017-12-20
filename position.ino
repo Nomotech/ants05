@@ -40,7 +40,7 @@ void updateMachinePosition(){
   if(dR != dL) r = (float)(dR + dL) * tireDistance / (dR - dL); //カーブの回転半径  
   
   // -----------------------< encoder 角度を利用 >-------------------------------
-  machineT = zg;
+  machineT = zg / 180.0 * PI;
   float dTheta = (float)(dR - dL) / (2 * tireDistance);         //角度の変化量
   float dX = r * sin(dTheta);                                   //１ループ前の機体座標のXの変化量
   float dY = r * (1.0-cos(dTheta));                             //１ループ前の機体座標のYの変化量

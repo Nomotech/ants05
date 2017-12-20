@@ -97,8 +97,8 @@ float leftMoter=0.0;  // 左moter出力 -1.0 ~ 1.0
  
 // -----------------------------<>-----------------------------------
 void update(){
-//  rightMoter = 0.0;
-//  leftMoter = 0.0;
+ rightMoter = 0.0;
+ leftMoter = 0.0;
 }
 
 

@@ -6,7 +6,7 @@ void Move(float L,float R){
     if(R < -1.0) R =-1.0;
 
     float a = 0.05;     // 安定角度閾値
-    float c = 0.4;     // 最下値
+    float c = 0.35;     // 最下値
     float b = 1.0 - c;  // 出力値
     // b + c = 1.0
      
