@@ -1,6 +1,6 @@
 void updateEncoder(){
-  // encoderR = (analogRead(ENC_R) > threshold) ? true : false;
-  // encoderL = (analogRead(ENC_L) > threshold) ? true : false;
+  encoderR = (analogRead(ENC_R) > threshold) ? true : false;
+  encoderL = (analogRead(ENC_L) > threshold) ? true : false;
   // Serial.printf("old:%d, new:%d\n",oldEncoderR,encoderR);
   if(oldEncoderR != encoderR){
     if(rightMoter > 0.0)	encoderCountR+=1;
@@ -11,13 +11,13 @@ void updateEncoder(){
 		if(leftMoter < 0.0)	encoderCountL-=1; 
 	}
 
-  // oldEncoderR = encoderR;
-  // oldEncoderL = encoderL;
+  oldEncoderR = encoderR;
+  oldEncoderL = encoderL;
   
 
-  Serial.print(" enco ang R: "); Serial.print(analogRead(ENC_R));
-  Serial.print(" enco ang L: "); Serial.print(analogRead(ENC_L));
-  Serial.printf("\n");
+  // Serial.print(" enco ang R: "); Serial.print(analogRead(39));
+  // Serial.print(" enco ang L: "); Serial.print(analogRead(36));
+  // Serial.printf("\n");
 
 //   Serial.print(" enco value R: "); Serial.print(encoderR);
 //   Serial.print(" enco value L: "); Serial.print(encoderL);
@@ -40,7 +40,7 @@ void updateMachinePosition(){
   if(dR != dL) r = (float)(dR + dL) * tireDistance / (dR - dL); //カーブの回転半径  
   
   // -----------------------< encoder 角度を利用 >-------------------------------
-  machineT = gyroT;
+  machineT = zg;
   float dTheta = (float)(dR - dL) / (2 * tireDistance);         //角度の変化量
   float dX = r * sin(dTheta);                                   //１ループ前の機体座標のXの変化量
   float dY = r * (1.0-cos(dTheta));                             //１ループ前の機体座標のYの変化量
