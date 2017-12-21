@@ -46,7 +46,7 @@ const int moter[]    = {0,1,2,3}; // moter attach
 const int led[] = {4,5,6,7};
 const int servo[] = {8,9};
 
-#define ENC_R 4
+#define ENC_R 39
 #define ENC_L 36
 #define CLK 22
 #define MISO 27
@@ -58,8 +58,15 @@ const int servo[] = {8,9};
 
 #define PI 3.1415926535897932384626433832795
 
+
+struct PassingPoint {
+  float x = 0.0;
+  float y = 0.0;
+  float ps = 0.0;
+  float ls = 0.0;
+  struct PassingPoint *next = NULL; 
+};
 // --------------------------------< global変数 >----------------------------------------------
-SimpleBLE ble;
 const float tireDistance = 27.0;      // 機体中心軸からタイヤまでの距離
 const float tireRadius = 12.3;        // タイヤ半径
 const int threshold = 1000;           // encoder閾値
@@ -94,7 +101,13 @@ float mpuMachineT = 0.0; //機体角度Theta(rad)
 float rightMoter=0.0; // 右moter出力 -1.0 ~ 1.0
 float leftMoter=0.0;  // 左moter出力 -1.0 ~ 1.0
 
- 
+float debugX =0.0;
+float debugY =0.0;
+float debugT =0.0;
+
+struct PassingPoint *route;
+struct PassingPoint *nextPoint;
+
 // -----------------------------<>-----------------------------------
 void update(){
  rightMoter = 0.0;
@@ -109,16 +122,17 @@ void MainTask(void* arg) {
     //mpuLog();
     updateEncoder();          // エンコーダの値を更新
     updateMachinePosition();  // 機体座標の更新
-    // switch(count%3){
-    //   case 0: Serial.printf("r:%.2f:%.2f:%.2f\n",machineX,machineY,machineT); break;
-    //   case 1: Serial.printf("b:%.2f:%.2f:%.2f\n",mpuMachineX,mpuMachineY,mpuMachineT); break;
-    //   case 2: Serial.printf("y:%.2f:%.2f:%.2f\n",vx,vy,vz); break;
-    // }
-    Serial.printf("r:%.2f:%.2f:%.2f\n",machineX,machineY,machineT);
-    attitudeAngle(0.0);               // 機体の姿勢角になるようにmoter出力を変える
+    switch(count%2){
+      case 0: Serial.printf("r:%.2f:%.2f:%.2f\n",machineX,machineY,machineT); break;
+      case 1: Serial.printf("b:%.2f:%.2f:%.2f\n",nextPoint->x,nextPoint->y,debugT); break;
+      //case 2: Serial.printf("y:%.2f:%.2f:%.2f\n",vx,vy,vz); break;
+    }
+    //Serial.printf("r:%.2f:%.2f:%.2f\n",machineX,machineY,machineT);
+    //attitudeAngle(0.0);               // 機体の姿勢角になるようにmoter出力を変える
+    update();                         // update
+    runToPoint(nextPoint);
     Move(leftMoter,rightMoter);       // モーターに出力値を与える
     count++;
-    update();                         // update
     delay(10);
   }
 }
@@ -158,7 +172,18 @@ void setup() {
   int i = 0;
   for(i=0;i<=65000;i+=100){ ledcWrite(led[0],i); delay(1); }  //完了の合図
   
-  Serial.print("init finished\n");
+  // route set
+  route = (PassingPoint *)malloc(sizeof(PassingPoint));
+  route->x = route->y = route->ps = route->ls = 0.0; route->next =NULL;
+  nextPoint = route;
+  nextPoint = addPassingPoint(nextPoint,  0.0,  10.0, 0.4,0.0);
+  nextPoint = addPassingPoint(nextPoint, 10.0,  10.0, 0.4,0.0);
+  nextPoint = addPassingPoint(nextPoint, 10.0,  0.0,  0.4,0.0);
+  nextPoint = addPassingPoint(nextPoint,  0.0,  0.0,  0.4,0.0);
+  nextPoint = route;
+  // printRoute(route);
+
+  Serial.printf("init finished\n");
   // ---------------------< RTOSのタスク振り >----------------------------
   xTaskCreatePinnedToCore(MainTask,   "MainTask",   4096, NULL, 1, NULL, 0);  // core0
   xTaskCreatePinnedToCore(SensorTask, "SensorTask", 4096, NULL, 1, NULL, 1);  // core1

@@ -15,9 +15,9 @@ void updateEncoder(){
   oldEncoderL = encoderL;
   
 
-  // Serial.print(" enco ang R: "); Serial.print(analogRead(39));
-  // Serial.print(" enco ang L: "); Serial.print(analogRead(36));
-  // Serial.printf("\n");
+  Serial.print(" enco ang R: "); Serial.print(analogRead(ENC_R));
+  Serial.print(" enco ang L: "); Serial.print(analogRead(ENC_L));
+  Serial.printf("\n");
 
 //   Serial.print(" enco value R: "); Serial.print(encoderR);
 //   Serial.print(" enco value L: "); Serial.print(encoderL);
@@ -45,6 +45,7 @@ void updateMachinePosition(){
   float dX = r * sin(dTheta);                                   //１ループ前の機体座標のXの変化量
   float dY = r * (1.0-cos(dTheta));                             //１ループ前の機体座標のYの変化量
   encoderT += dTheta;
+  // machineT = encoderT;
   machineX += dX * cos(machineT) - dY * sin(machineT);
   machineY += dX * sin(machineT) + dY * cos(machineT);
 
@@ -52,15 +53,15 @@ void updateMachinePosition(){
   
   
   // -------------------------< gyro 角度を利用 >--------------------------------
-  float dTheta_g = zg_d / 0xffff;
-  float dX_g = r * sin(dTheta_g);                                   //１ループ前の機体座標のXの変化量
-  float dY_g = r * (1.0-cos(dTheta_g));                             //１ループ前の機体座標のYの変化量
-  gyroT = zg / 0xffff;
-//  mpuMachineX += dX_g * cos(gyroT) - dY_g * sin(gyroT);
-//  mpuMachineY += dX_g * sin(gyroT) + dY_g * cos(gyroT);
-  mpuMachineX += vx/100 * cos(gyroT) - vy/100 * sin(gyroT);
-  mpuMachineY += vx/100 * sin(gyroT) + vy/100 * cos(gyroT);
-  mpuMachineT = gyroT;
+//   float dTheta_g = zg_d / 0xffff;
+//   float dX_g = r * sin(dTheta_g);                                   //１ループ前の機体座標のXの変化量
+//   float dY_g = r * (1.0-cos(dTheta_g));                             //１ループ前の機体座標のYの変化量
+//   gyroT = zg / 0xffff;
+// //  mpuMachineX += dX_g * cos(gyroT) - dY_g * sin(gyroT);
+// //  mpuMachineY += dX_g * sin(gyroT) + dY_g * cos(gyroT);
+//   mpuMachineX += vx/100 * cos(gyroT) - vy/100 * sin(gyroT);
+//   mpuMachineY += vx/100 * sin(gyroT) + vy/100 * cos(gyroT);
+//   mpuMachineT = gyroT;
 }
 
 void debug(){
