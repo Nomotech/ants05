@@ -1,4 +1,4 @@
-void Move(float L,float R){
+void run(float L,float R){
     // クランプ
     if(L > 1.0)  L = 1.0;
     if(L < -1.0) L =-1.0;

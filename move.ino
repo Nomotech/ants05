@@ -26,23 +26,23 @@ void attitudeAngle(float angle){
 void attitudeRad(float rad){
   // zg  0x0000 ～ 0xffff --> -90°～ 90°
   float dT = rad - machineT;
-  float max = 1.0 - dT/PI;
-  if(max < 0.0) max = 0.0;
+  if(dT > PI)  dT = PI;
+  if(dT < -PI) dT = -PI;
+  dT /= PI;
+
+  if(dT > 0)      dT = easeOutSine(dT);
+  else if(dT < 0) dT = -easeOutSine(-dT);
+
+  // float max = 1.0 - dT;
+  // if(max < 0.0) max = 0.0;
   
   float R = dT;
-  if(R > PI)  R = PI;
-  if(R < -PI) R = -PI;
-  R /= PI;
-
   float L = -dT;
-  if(L >PI)  L = PI;
-  if(L < -PI) L = -PI;
-  L /= PI;
   
-  if(leftMoter > max)  leftMoter = max;
-  if(leftMoter < -max) leftMoter =-max;
-  if(rightMoter > max)  rightMoter = max;
-  if(rightMoter < -max) rightMoter =-max;
+  // if(leftMoter > max)  leftMoter = max;
+  // if(leftMoter < -max) leftMoter =-max;
+  // if(rightMoter > max)  rightMoter = max;
+  // if(rightMoter < -max) rightMoter =-max;
   
   rightMoter  += R;
   leftMoter   += L;

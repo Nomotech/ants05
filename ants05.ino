@@ -128,10 +128,11 @@ void MainTask(void* arg) {
       //case 2: Serial.printf("y:%.2f:%.2f:%.2f\n",vx,vy,vz); break;
     }
     //Serial.printf("r:%.2f:%.2f:%.2f\n",machineX,machineY,machineT);
-    //attitudeAngle(0.0);               // 機体の姿勢角になるようにmoter出力を変える
     update();                         // update
+    // ここより下でmoterの出力を与える
+    //attitudeRad(0.0);               // 機体の姿勢角になるようにmoter出力を変える
     runToPoint(nextPoint);
-    Move(leftMoter,rightMoter);       // モーターに出力値を与える
+    run(leftMoter,rightMoter);       // モーターに出力値を与える
     count++;
     delay(10);
   }
@@ -176,10 +177,11 @@ void setup() {
   route = (PassingPoint *)malloc(sizeof(PassingPoint));
   route->x = route->y = route->ps = route->ls = 0.0; route->next =NULL;
   nextPoint = route;
-  nextPoint = addPassingPoint(nextPoint,  0.0,  10.0, 0.4,0.0);
-  nextPoint = addPassingPoint(nextPoint, 10.0,  10.0, 0.4,0.0);
-  nextPoint = addPassingPoint(nextPoint, 10.0,  0.0,  0.4,0.0);
-  nextPoint = addPassingPoint(nextPoint,  0.0,  0.0,  0.4,0.0);
+  nextPoint = addPassingPoint(nextPoint,  0.0,  5.0, 0.4,0.0);
+  nextPoint = addPassingPoint(nextPoint,  5.0,  5.0, 0.4,0.0);
+  nextPoint = addPassingPoint(nextPoint,  5.0,  0.0, 0.4,0.0);
+  nextPoint = addPassingPoint(nextPoint,  0.0,  0.0, 0.4,0.0);
+  
   nextPoint = route;
   // printRoute(route);
 
